@@ -1,0 +1,340 @@
+
+/*body {
+    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2)), 
+                url('../../Imagens/fundo.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    min-height: 100vh;   
+}*/
+
+
+/* =========================
+   MENU HAMBÚRGUER
+========================= */
+
+.menu {
+    background: #2c3e50;
+    color: #fff;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* TOPO */
+.menu-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px; 
+}
+
+/* LOGO */
+.logo {
+    font-weight: bold;
+    font-size: 22px; /* 🔹 MAIOR */
+}
+
+/* BOTÃO HAMBÚRGUER */
+.hamburger {
+    font-size: 32px; /* 🔹 MAIOR */
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: none;
+}
+
+/* LISTA PRINCIPAL */
+#menu-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* ITENS DO MENU */
+#menu-lista > li {
+    position: relative;
+}
+
+/* LINKS PRINCIPAIS */
+#menu-lista > li > a {
+    display: block;
+    padding: 18px 26px;
+    color: white;
+    text-decoration: none;
+    font-size: 20px;   /* 🔹 MAIOR */
+    font-weight: 500;
+}
+
+/* HOVER */
+#menu-lista > li > a:hover {
+    background: #34495e;
+}
+
+/* SUBMENU */
+.submenu {
+    display: none;
+    position: absolute;
+    background: #34495e;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    z-index: 999;
+}
+
+/* LINKS DO SUBMENU */
+.submenu li a {
+    display: block;
+    padding: 16px 20px;
+    font-size: 17px; /* 🔹 MAIOR */
+    color: white;
+    text-decoration: none;
+}
+
+.submenu li a:hover {
+    background: #3d566e;
+}
+
+/* MOSTRAR SUBMENU NO DESKTOP */
+.dropdown:hover .submenu {
+    display: block;
+}
+
+/* BOTÃO SAIR */
+.sair {
+    margin-left: auto;
+    background: #c0392b;
+}
+
+.sair a {
+    font-size: 18px; /* 🔹 MAIOR */
+}
+
+.sair a:hover {
+    background: #e74c3c;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 768px) {
+
+    .hamburger {
+        display: block;
+    }
+
+    #menu-lista {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: #2c3e50;
+    }
+
+    #menu-lista.ativo {
+        display: flex;
+    }
+
+    #menu-lista > li {
+        width: 100%;
+    }
+
+    #menu-lista > li > a {
+        font-size: 18px; /* 🔹 mantém grande */
+        padding: 18px 20px;
+    }
+
+    /* SUBMENU NO MOBILE */
+    .submenu {
+        position: static;
+        width: 100%;
+    }
+
+    /* DESATIVA HOVER */
+    .dropdown:hover .submenu {
+        display: none;
+    }
+
+    /* ABRE SUBMENU POR CLIQUE */
+    .dropdown.ativo .submenu {
+        display: block;
+    }
+
+    .submenu li a {
+        font-size: 17px;
+        padding-left: 40px;
+    }
+}
+
+/* =========================
+   IMPRESSÃO
+========================= */
+
+.linha {
+    margin: 6px 0;
+}
+
+h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+@media print {
+    input {
+        border: none;
+        font-size: 14px;
+    }
+
+    button, form, .menu {
+        display: none;
+    }
+
+    body {
+        background: white;
+    }
+}
+
+
+
+.dashboard {
+    padding: 30px;
+}
+
+.dashboard h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.dashboard p {
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* GRID DE CARDS */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+/* CARD */
+.card-dashboard {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+    border-left: 6px solid #2c3e50;
+}
+
+.card-dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+/* TÍTULO DO CARD */
+.card-dashboard h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* LINK */
+.card-dashboard a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.card-dashboard a:hover {
+    text-decoration: underline;
+}
+
+/* CORES POR SEÇÃO */
+.card-estoque { border-left-color: #8e44ad; }
+.card-produtos { border-left-color: #2980b9; }
+.card-clientes { border-left-color: #27ae60; }
+.card-vendedores { border-left-color: #f39c12; }
+.card-motoristas { border-left-color: #16a085; }
+.card-pedidos { border-left-color: #c0392b; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .dashboard h1 {
+        font-size: 24px;
+    }
+}
+
+
+.conteudo form input,
+.conteudo form select {
+    width: 260px;
+    padding: 12px;
+    font-size: 16px;
+    margin-right: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #bbb;
+}
+
+/* Placeholder */
+.conteudo form input::placeholder {
+    font-size: 15px;
+    color: #777;
+}
+
+/* Botão */
+.conteudo form button {
+    padding: 12px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2c3e50;
+    color: #fff;
+    cursor: pointer;
+}
+
+.conteudo form button:hover {
+    background-color: #1a252f;
+}
+
+form p {
+    margin-bottom: 12px;
+}
+
+form label {
+    font-weight: bold;
+}
+
+.btn-ajuda {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding: 10px 16px;
+    background: #2980b9;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.btn-ajuda:hover {
+    background: #1f6391;
+}
+
+.exemplo-planilha {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f4f6f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.exemplo-planilha img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}

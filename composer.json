@@ -1,0 +1,17 @@
+{
+    "name": "danie/tcc",
+    "autoload": {
+        "psr-4": {
+            "Danie\\Tcc\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "FelipeVAnDerVeen",
+            "email": "felipe.davidos.santos@escola.pr.gov.br"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.3"
+    }
+}
