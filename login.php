@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+    <link rel="icon" href="Imagens/caixa.png">
 <head>
     <meta charset="UTF-8">
     <title>Estoque Merchan</title>
