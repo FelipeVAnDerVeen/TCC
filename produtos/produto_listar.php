@@ -43,7 +43,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             🔍 Filtrar
         </button>
 
-        <a href="produto_listar.php" style="margin-left:10px;">
+        <a href="produto_listar.php" style="margin-left:10px;" class="btn-limpar">
             Limpar
         </a>
     </form>

@@ -2,110 +2,490 @@
 require '../verifica_sessao.php';
 require '../conexao.php';
 
-/* ATUALIZA STATUS */
-if (isset($_POST['codPedido'], $_POST['status'])) {
+/* =========================
+   ATUALIZAR PEDIDO
+========================= */
 
-    if ($_POST['status'] === 'Entregue') {
-        $sql = "
-            UPDATE pedidos 
-            SET statusPedido = :status, dataEntrega = CURDATE()
-            WHERE codPedido = :id
-        ";
-    } else {
-        $sql = "
-            UPDATE pedidos 
-            SET statusPedido = :status, dataEntrega = NULL
-            WHERE codPedido = :id
-        ";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $codPedido = $_POST['codPedido'];
+    $codMotorista = $_POST['codMotorista'];
+    $numeroCarga = $_POST['numeroCarga'];
+    $status = $_POST['status'];
+
+    try {
+
+        if ($status == 'Entregue') {
+
+            $sql = "
+                    UPDATE pedidos
+                    SET
+                        codMotorista = :motorista,
+                        numeroCarga = :carga,
+                        statusPedido = :status,
+                        dataEntrega = CURDATE()
+                    WHERE codPedido = :pedido
+                ";
+        } else {
+
+            $sql = "
+                    UPDATE pedidos
+                    SET
+                        codMotorista = :motorista,
+                        numeroCarga = :carga,
+                        statusPedido = :status,
+                        dataEntrega = NULL
+                    WHERE codPedido = :pedido
+                ";
+        }
+
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->execute([
+            ':motorista' => $codMotorista ?: null,
+            ':carga' => $numeroCarga,
+            ':status' => $status,
+            ':pedido' => $codPedido
+        ]);
+    } catch (Exception $e) {
+
+        echo "Erro ao atualizar pedido: " . $e->getMessage();
     }
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':status', $_POST['status']);
-    $stmt->bindParam(':id', $_POST['codPedido']);
-    $stmt->execute();
 }
 
-/* LISTA PEDIDOS */
+$buscaPedido = $_GET['pedido'] ?? '';
+$buscaCliente = $_GET['cliente'] ?? '';
+$buscaMotorista = $_GET['motorista'] ?? '';
+$buscaStatus = $_GET['status'] ?? '';
+$buscaCarga = $_GET['carga'] ?? '';
+$buscaDataInicio = $_GET['dataInicio'] ?? '';
+$buscaDataFim = $_GET['dataFim'] ?? '';
+
+$where = [];
+$params = [];
+
+/* PEDIDO */
+if (!empty($buscaPedido)) {
+
+    $where[] = "p.codPedido = :pedido";
+    $params[':pedido'] = $buscaPedido;
+}
+
+/* CLIENTE */
+if (!empty($buscaCliente)) {
+
+    $where[] = "
+        (
+            c.nomeCliente LIKE :cliente
+            OR c.codCliente LIKE :cliente
+        )
+    ";
+
+    $params[':cliente'] = "%$buscaCliente%";
+}
+
+/* MOTORISTA */
+if (!empty($buscaMotorista)) {
+
+    $where[] = "m.nomeMotorista LIKE :motorista";
+
+    $params[':motorista'] = "%$buscaMotorista%";
+}
+
+/* STATUS */
+if (!empty($buscaStatus)) {
+
+    $where[] = "p.statusPedido = :status";
+
+    $params[':status'] = $buscaStatus;
+}
+
+/* CARGA */
+if (!empty($buscaCarga)) {
+
+    $where[] = "p.numeroCarga LIKE :carga";
+
+    $params[':carga'] = "%$buscaCarga%";
+}
+
+/* DATA INICIAL */
+if (!empty($buscaDataInicio)) {
+
+    $where[] = "p.dataPedido >= :dataInicio";
+
+    $params[':dataInicio'] = $buscaDataInicio;
+}
+
+/* DATA FINAL */
+if (!empty($buscaDataFim)) {
+
+    $where[] = "p.dataPedido <= :dataFim";
+
+    $params[':dataFim'] = $buscaDataFim;
+}
+
+/* MONTA WHERE */
+$filtroSQL = '';
+
+if (!empty($where)) {
+
+    $filtroSQL = 'WHERE ' . implode(' AND ', $where);
+}
+
+/* =========================
+   LISTAR PEDIDOS
+========================= */
+
 $sql = "
-SELECT 
-    p.codPedido,
-    p.dataPedido,
-    p.statusPedido,
-    p.dataEntrega,
+SELECT
+    p.*,
+
     c.nomeCliente,
     c.codCliente,
-    v.nomeVendedor,
-    m.nomeMotorista
+
+    m.nomeMotorista,
+    m.placaMotorista
+
 FROM pedidos p
-JOIN clientes c ON p.codCliente = c.codCliente
-JOIN vendedores v ON p.codVendedor = v.codVendedor
-JOIN motoristas m ON p.codMotorista = m.codMotorista
-ORDER BY p.dataPedido DESC
+
+JOIN clientes c
+ON p.codCliente = c.codCliente
+
+LEFT JOIN motoristas m
+ON p.codMotorista = m.codMotorista
+
+$filtroSQL
+
+ORDER BY p.codPedido DESC
 ";
 
-$pedidos = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+$stmt = $pdo->prepare($sql);
+
+$stmt->execute($params);
+
+$pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+/* =========================
+   MOTORISTAS
+========================= */
+
+$sqlMotoristas = "
+    SELECT *
+    FROM motoristas
+    ORDER BY nomeMotorista
+";
+
+$motoristas = $pdo->query($sqlMotoristas)->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
+
     <title>Pedidos</title>
+
     <link rel="stylesheet" href="/TCC/sistema/css/estilo.css">
     <link rel="icon" href="../Imagens/caixa.png">
 </head>
+
+
 <body>
 
-<?php include '../sistema/menu.php'; ?>
+    <?php include '../sistema/menu.php'; ?>
 
-<div class="conteudo">
+    <h2>Pedidos Registrados</h2>
 
-<h2>Pedidos Registrados</h2>
 
-<table border="1" width="100%" cellpadding="8">
-<tr>
-    <th>Código</th>
-    <th>Data</th>
-    <th>Cód. Cliente</th>
-    <th>Cliente</th>
-    <th>Vendedor</th>
-    <th>Motorista</th>
-    <th>Status</th>
-</tr>
+    <form method="GET" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;" class="filtro-clientes">
 
-<?php foreach ($pedidos as $p): ?>
-<tr>
-    <td><?= $p['codPedido'] ?></td>
-    <td><?= date('d/m/Y', strtotime($p['dataPedido'])) ?></td>
-    <td><?= $p['codCliente'] ?></td>
-    <td><?= $p['nomeCliente'] ?></td>
-    <td><?= $p['nomeVendedor'] ?></td>
-    <td><?= $p['nomeMotorista'] ?></td>
+        <input
+            type="text"
+            name="pedido"
+            placeholder="Pedido"
+            value="<?= $buscaPedido ?>">
 
-    <td>
-        <form method="POST">
-            <input type="hidden" name="codPedido" value="<?= $p['codPedido'] ?>">
+        <input
+            type="text"
+            name="cliente"
+            placeholder="Cliente"
+            value="<?= $buscaCliente ?>">
 
-            <select name="status" onchange="this.form.submit()">
-                <option value="Aguardando" <?= $p['statusPedido'] == 'Aguardando' ? 'selected' : '' ?>>
-                    Aguardando
-                </option>
-                <option value="Entregue" <?= $p['statusPedido'] == 'Entregue' ? 'selected' : '' ?>>
-                    Entregue
-                </option>
-            </select>
+        <input
+            type="text"
+            name="motorista"
+            placeholder="Motorista"
+            value="<?= $buscaMotorista ?>">
 
-            <?php if (!empty($p['dataEntrega'])): ?>
-                <div style="font-size:12px; color:green;">
-                    Entregue em: <?= date('d/m/Y', strtotime($p['dataEntrega'])) ?>
-                </div>
-            <?php endif; ?>
-        </form>
-    </td>
-</tr>
-<?php endforeach; ?>
+        <input
+            type="text"
+            name="carga"
+            placeholder="Carga"
+            value="<?= $buscaCarga ?>">
 
-</table>
-</div>
+        <input
+            type="date"
+            name="dataInicio"
+            value="<?= $buscaDataInicio ?>">
+
+        <input
+            type="date"
+            name="dataFim"
+            value="<?= $buscaDataFim ?>">
+
+        <select name="status">
+
+            <option value="">
+                Status
+            </option>
+
+            <option value="Aguardando"
+                <?= $buscaStatus == 'Aguardando' ? 'selected' : '' ?>>
+                Aguardando
+            </option>
+
+            <option value="Entregue"
+                <?= $buscaStatus == 'Entregue' ? 'selected' : '' ?>>
+                Entregue
+            </option>
+
+        </select>
+
+        <button type="submit">
+            🔍 Filtrar
+        </button>
+
+        <a href="pedido_listar.php" class="btn-limpar">
+            Limpar
+        </a>
+
+    </form>
+
+    <p style="margin-bottom:20px;">
+        <strong>
+            Total de pedidos:
+            <?= count($pedidos) ?>
+        </strong>
+    </p>
+
+    <div class="conteudo">
+
+
+
+        <table border="1" width="100%" cellpadding="8">
+
+            <tr>
+
+                <th>Pedido</th>
+                <th>Data</th>
+                <th>Cliente</th>
+                <th>Produtos</th>
+                <th>Motorista</th>
+                <th>Carga</th>
+                <th>Status</th>
+                <th>Entrega</th>
+                <th>Ações</th>
+
+            </tr>
+
+            <?php foreach ($pedidos as $p): ?>
+
+                <tr>
+
+                    <!-- PEDIDO -->
+                    <td>
+                        <?= $p['codPedido'] ?>
+                    </td>
+
+                    <!-- DATA -->
+                    <td>
+                        <?= date('d/m/Y', strtotime($p['dataPedido'])) ?>
+                    </td>
+
+                    <!-- CLIENTE -->
+                    <td>
+
+                        <?= $p['codCliente'] ?>
+                        -
+                        <?= $p['nomeCliente'] ?>
+
+                    </td>
+
+                    <!-- PRODUTOS -->
+                    <td>
+
+                        <?php
+
+                        $sqlItens = "
+                    SELECT
+                        i.quantidade,
+
+                        pr.nomeProduto,
+                        pr.pesoProduto
+
+                    FROM itens_pedido i
+
+                    JOIN produtos pr
+                    ON i.codProduto = pr.codProduto
+
+                    WHERE i.codPedido = ?
+                ";
+
+                        $stmtItens = $pdo->prepare($sqlItens);
+
+                        $stmtItens->execute([
+                            $p['codPedido']
+                        ]);
+
+                        $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+
+                        $pesoTotal = 0;
+
+                        foreach ($itens as $item) {
+
+                            $pesoItem =
+                                $item['quantidade']
+                                *
+                                $item['pesoProduto'];
+
+                            $pesoTotal += $pesoItem;
+
+                            echo "
+                        • {$item['nomeProduto']}
+                        ({$item['quantidade']})
+                        <br>
+                    ";
+                        }
+
+                        echo "
+                    <hr>
+                    <strong>
+                        Peso Total:
+                        {$pesoTotal} kg
+                    </strong>
+                ";
+                        ?>
+
+                    </td>
+
+                    <!-- FORM -->
+                    <form method="POST">
+
+                        <input
+                            type="hidden"
+                            name="codPedido"
+                            value="<?= $p['codPedido'] ?>">
+
+                        <!-- MOTORISTA -->
+                        <td>
+
+                            <select name="codMotorista">
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <?php foreach ($motoristas as $m): ?>
+
+                                    <option
+                                        value="<?= $m['codMotorista'] ?>"
+
+                                        <?= $p['codMotorista'] == $m['codMotorista']
+                                            ? 'selected'
+                                            : ''
+                                        ?>>
+
+                                        <?= $m['nomeMotorista'] ?>
+
+                                    </option>
+
+                                <?php endforeach; ?>
+
+                            </select>
+
+                        </td>
+
+                        <!-- CARGA -->
+                        <td>
+
+                            <input
+                                type="text"
+                                name="numeroCarga"
+                                value="<?= $p['numeroCarga'] ?>"
+                                placeholder="Carga">
+
+                        </td>
+
+                        <!-- STATUS -->
+                        <td>
+
+                            <select name="status">
+
+                                <option
+                                    value="Aguardando"
+
+                                    <?= $p['statusPedido'] == 'Aguardando'
+                                        ? 'selected'
+                                        : ''
+                                    ?>>
+                                    Aguardando
+                                </option>
+
+
+                                <option
+                                    value="Entregue"
+
+                                    <?= $p['statusPedido'] == 'Entregue'
+                                        ? 'selected'
+                                        : ''
+                                    ?>>
+                                    Entregue
+                                </option>
+
+                            </select>
+
+                        </td>
+
+                        <!-- ENTREGA -->
+                        <td>
+
+                            <?php if (!empty($p['dataEntrega'])): ?>
+
+                                <?= date(
+                                    'd/m/Y',
+                                    strtotime($p['dataEntrega'])
+                                ) ?>
+
+                            <?php else: ?>
+
+                                -
+
+                            <?php endif; ?>
+
+                        </td>
+
+                        <!-- BOTÃO -->
+                        <td>
+
+                            <button type="submit">
+                                Salvar
+                            </button>
+
+                    </form>
+
+                    </td>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+        </table>
+
+    </div>
 
 </body>
+
 </html>

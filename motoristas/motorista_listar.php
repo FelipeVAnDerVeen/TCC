@@ -31,7 +31,7 @@ $motoristas = $stmt->fetchAll();
     <input name="busca" placeholder="Buscar motorista">
     <button>🔍 Filtrar</button>
 
-    <a href="motorista_listar.php" style="margin-left:10px;">
+    <a href="motorista_listar.php" style="margin-left:10px;" class="btn-limpar">
         Limpar
     </a>
 </form>

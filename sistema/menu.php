@@ -43,7 +43,7 @@
         <li class="dropdown">
             <a href="#">Pedidos</a>
             <ul class="submenu">
-                <li><a href="../pedidos/pedido_cadastro.php">Novo Pedido</a></li>
+                <li><a href="../pedidos/pedido_cadastrar.php">Novo Pedido</a></li>
                 <li><a href="../pedidos/pedido_listar.php">Listar</a></li>
             </ul>
         </li>
@@ -51,8 +51,8 @@
         <li class="dropdown">
             <a href="#">Romaneios</a>
             <ul class="submenu">
-                <li><a href="../relatorios/entrega_cliente.php?pedido=<?= $p['codPedido'] ?>"target="_blank">Entrega Cliente</a></li>
-                <li><a href="../relatorios/romaneio.php?pedido=<?= $p['codPedido'] ?>"target="_blank">Romaneio</a></li>
+                <li><a href="../relatorios/entrega_cliente.php?pedido "target="_blank">Entrega Cliente</a></li>
+                <li><a href="../relatorios/romaneio.php?pedido "target="_blank">Romaneio</a></li>
             </ul>
         </li>
 

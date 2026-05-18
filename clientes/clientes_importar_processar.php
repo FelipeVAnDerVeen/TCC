@@ -43,27 +43,50 @@ try {
 
         // Validação mínima
         if (
-            empty($linha[0]) || // codCliente
-            empty($linha[1]) || // nomeCliente
-            empty($linha[4])    // codVendedor
+            empty($linha[0]) ||
+            empty($linha[1]) ||
+            empty($linha[4])
         ) {
             $ignorados++;
             continue;
         }
 
-        // Verifica se já existe
+        $codCliente  = trim($linha[0]);
+        $nomeCliente = trim($linha[1]);
+        $cidade      = trim($linha[2] ?? '');
+        $endereco    = trim($linha[3] ?? '');
+        $codVendedor = trim($linha[4]);
+
+        // VERIFICA SE O VENDEDOR EXISTE
+        $verificaVendedor = $pdo->prepare(
+            "SELECT COUNT(*) FROM vendedores WHERE codVendedor = ?"
+        );
+
+        $verificaVendedor->execute([$codVendedor]);
+
+        if (!$verificaVendedor->fetchColumn()) {
+
+            throw new Exception(
+                "O vendedor código {$codVendedor} não está cadastrado no sistema."
+            );
+        }
+
+        // VERIFICA SE CLIENTE JÁ EXISTE
         $verifica = $pdo->prepare(
             "SELECT COUNT(*) FROM clientes WHERE codCliente = ?"
         );
-        $verifica->execute([$linha[0]]);
+
+        $verifica->execute([$codCliente]);
+
         $existe = $verifica->fetchColumn();
 
+        // INSERT / UPDATE
         $stmt->execute([
-            ':cod'      => trim($linha[0]),
-            ':nome'     => trim($linha[1]),
-            ':cidade'   => trim($linha[2] ?? ''),
-            ':endereco' => trim($linha[3] ?? ''),
-            ':vendedor' => trim($linha[4])
+            ':cod'      => $codCliente,
+            ':nome'     => $nomeCliente,
+            ':cidade'   => $cidade,
+            ':endereco' => $endereco,
+            ':vendedor' => $codVendedor
         ]);
 
         if ($existe) {
@@ -76,14 +99,9 @@ try {
     $pdo->commit();
 
     // Redireciona com resumo
-    header(
-        "Location: cliente_listar.php?
-        inseridos=$inseridos&
-        atualizados=$atualizados&
-        ignorados=$ignorados"
-    );
+    
+    header("Location: cliente_listar.php?inseridos=$inseridos&atualizados=$atualizados&ignorados=$ignorados");
     exit;
-
 } catch (Exception $e) {
     $pdo->rollBack();
     echo "Erro ao importar clientes: " . $e->getMessage();

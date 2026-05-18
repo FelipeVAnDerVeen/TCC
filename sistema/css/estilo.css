@@ -12,6 +12,12 @@
    MENU HAMBÚRGUER
 ========================= */
 
+body {
+    transform: scale(1.1);
+    transform-origin: top left;
+    width: 90%;
+}
+
 .menu {
     background: #2c3e50;
     color: #fff;
@@ -118,7 +124,7 @@
 /* =========================
    MOBILE
 ========================= */
-@media (max-width: 768px) {
+@media (max-width: 800px) {
 
     .hamburger {
         display: block;
@@ -337,4 +343,257 @@ form label {
     height: auto;
     border-radius: 6px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+
+
+/* =========================
+   FILTRO CLIENTES
+========================= */
+
+.filtro-clientes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    margin-bottom: 20px;
+}
+
+.filtro-clientes input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    min-width: 200px;
+}
+
+.filtro-clientes button {
+    padding: 10px 20px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #2c3e50;
+    color: white;
+
+    cursor: pointer;
+}
+
+.filtro-clientes button:hover {
+    background: #34495e;
+}
+
+.btn-limpar {
+    padding: 10px 20px;
+
+    background: #c0392b;
+    color: white;
+
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.btn-limpar:hover {
+    background: #e74c3c;
+}
+
+.quantidade-clientes {
+    margin-bottom: 20px;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    color: #2c3e50;
+}
+
+
+form input,
+form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+form button {
+    padding: 10px 16px;
+    border: none;
+    background: #2c3e50;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background: #34495e;
+}
+
+.btn-limpar {
+    padding: 10px 16px;
+    background: #c0392b;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.btn-limpar:hover {
+    background: #e74c3c;
+}
+
+
+/* =========================
+   FILTRO DASHBOARD
+========================= */
+
+.filtro-dashboard {
+    display: flex;
+    align-items: end;
+    gap: 15px;
+
+    margin-top: 30px;
+    margin-bottom: 30px;
+
+    flex-wrap: wrap;
+}
+
+.campo-filtro {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-filtro label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* =========================
+   KPIs
+========================= */
+
+.kpis {
+    display: flex;
+    gap: 20px;
+
+    margin-bottom: 30px;
+
+    flex-wrap: wrap;
+}
+
+.kpi-card {
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+    min-width: 220px;
+}
+
+.kpi-card h3 {
+    margin-bottom: 10px;
+}
+
+.kpi-card span {
+    font-size: 28px;
+    font-weight: bold;
+
+    color: #2c3e50;
+}
+
+/* =========================
+   GRÁFICOS
+========================= */
+
+.dashboard-graficos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+
+    margin-top: 20px;
+}
+
+/* CARD */
+
+.grafico-card {
+    background: #fff;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+    height: 400px;
+
+    position: relative;
+}
+
+/* TÍTULO */
+
+.grafico-card h3 {
+    margin-bottom: 20px;
+}
+
+/* CANVAS */
+
+.grafico-card canvas {
+    max-height: 300px !important;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 1200px) {
+
+    .dashboard-graficos {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 1200px) {
+
+    .dashboard-graficos {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* =========================
+   KPI ANIMADO
+========================= */
+
+.kpi-centralizado {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
+.numero-kpi {
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.numero-kpi span {
+
+    font-size: 80px;
+
+    font-weight: bold;
+
+    color: #2c3e50;
+
 }

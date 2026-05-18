@@ -31,7 +31,7 @@ $vendedores = $stmt->fetchAll();
     <input name="busca" placeholder="Buscar vendedor">
     <button>🔍 Filtrar</button>
 
-    <a href="vendedor_listar.php" style="margin-left:10px;">
+    <a href="vendedor_listar.php" style="margin-left:10px;" class="btn-limpar">
         Limpar
     </a>
 </form>
